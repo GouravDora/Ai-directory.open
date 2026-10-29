@@ -34,6 +34,7 @@ function buildInput(obj: Record<string, unknown>, author: string): SubmissionInp
     mcp_connection_string: obj.mcp_connection_string as string,
     submitted_by: author,
     is_open_source: obj.is_open_source === true,
+    logo_url: typeof obj.logo_url === 'string' ? obj.logo_url : '',
   };
 }
 

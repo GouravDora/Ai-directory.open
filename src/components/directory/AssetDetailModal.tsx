@@ -11,7 +11,6 @@ import {
   ArrowBigUp,
   Bookmark,
   BookmarkCheck,
-  User,
   ExternalLink,
   FileText,
 } from 'lucide-react';
@@ -20,10 +19,11 @@ import { getOfficialSiteUrl } from '@/data/officialSites';
 import { useAssetDetail } from '@/context/AssetDetailContext';
 import { useToast } from '@/context/ToastContext';
 import { useBookmarks } from '@/context/BookmarkContext';
-import { useAuthorProfile } from '@/context/AuthorProfileContext';
 import { copyAssetJson, copyAssetMarkdown, downloadAssetJson } from '@/lib/exportAsset';
 import { AddToToolMenu } from './AddToToolMenu';
 import { SourceBadge } from './SourceBadge';
+import { AssetLogo } from './AssetLogo';
+import { AuthorLink } from './AuthorLink';
 
 type TabKey = 'system' | 'rules' | 'mcp';
 
@@ -80,7 +80,6 @@ export function AssetDetailModal({ onUpvote }: Props) {
   const { selectedAsset, closeDetail } = useAssetDetail();
   const { notify } = useToast();
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const { openAuthor } = useAuthorProfile();
   const [tab, setTab] = useState<TabKey>('system');
   const [upvoted, setUpvoted] = useState(false);
 
@@ -105,14 +104,8 @@ export function AssetDetailModal({ onUpvote }: Props) {
   if (!selectedAsset) return null;
 
   const asset = selectedAsset;
-  const Icon = asset.icon;
-  const Logo = asset.logo;
   const bookmarked = isBookmarked(asset.id);
   const accentText = asset.accent === 'green' ? 'text-emerald-400' : 'text-violet-400';
-  const accentSoft =
-    asset.accent === 'green'
-      ? 'bg-emerald-500/10 border-emerald-500/20'
-      : 'bg-violet-500/10 border-violet-500/20';
 
   const handleUpvote = () => {
     setUpvoted((v) => !v);
@@ -173,15 +166,7 @@ export function AssetDetailModal({ onUpvote }: Props) {
         {/* Header */}
         <div className="flex items-start justify-between gap-4 border-b border-obsidian-700/60 px-6 py-5">
           <div className="flex items-start gap-4">
-            <span
-              className={`grid h-14 w-14 shrink-0 place-items-center rounded-xl border bg-obsidian-800 ${accentSoft}`}
-            >
-              {Logo ? (
-                <Logo className={`h-8 w-8 ${accentText}`} />
-              ) : (
-                <Icon className={`h-7 w-7 ${accentText}`} strokeWidth={1.75} />
-              )}
-            </span>
+            <AssetLogo asset={asset} size="lg" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="font-display text-xl font-semibold text-obsidian-100">
@@ -205,17 +190,7 @@ export function AssetDetailModal({ onUpvote }: Props) {
                 </a>
               )}
               {asset.submittedBy && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeDetail();
-                    openAuthor(asset.submittedBy!);
-                  }}
-                  className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-obsidian-300 transition-colors hover:text-obsidian-100"
-                >
-                  <User className="h-3 w-3" />
-                  by {asset.submittedBy}
-                </button>
+                <AuthorLink name={asset.submittedBy} className="mt-1.5" onNavigate={closeDetail} />
               )}
             </div>
           </div>

@@ -92,6 +92,7 @@ export interface IntegrationAsset {
   category: AssetCategory;
   icon: LucideIcon;
   logo?: ComponentType<SVGProps<SVGSVGElement>>;
+  logoUrl?: string;
   accent: 'green' | 'purple';
   upvotes: number;
   isOpenSource: boolean;

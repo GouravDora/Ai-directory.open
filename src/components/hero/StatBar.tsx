@@ -12,13 +12,13 @@ export const STAT_SOURCES: StatSource[] = [
   {
     label: 'Indexed Assets',
     sublabel: 'Live across the directory',
-    value: 8421,
+    value: 0,
     icon: Database,
   },
   {
     label: 'AI Tools Tracked',
-    sublabel: 'Across 7 categories',
-    value: 66,
+    sublabel: 'Unique authors in the catalog',
+    value: 0,
     icon: Users,
   },
 ];

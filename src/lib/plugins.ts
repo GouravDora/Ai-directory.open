@@ -1,6 +1,7 @@
 import { type IntegrationAsset } from '@/data/integrations';
 import { ICON_REGISTRY } from '@/lib/submissions';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
+import { insertPluginAssetRecord } from '@/lib/assets';
 
 export interface PluginRow {
   id: string;
@@ -19,6 +20,7 @@ export interface PluginRow {
   submitted_by: string;
   upvotes: number;
   is_open_source?: boolean;
+  logo_url?: string | null;
   created_at: string;
 }
 
@@ -38,6 +40,7 @@ export interface PluginInput {
   submitted_by: string;
   company_id: string | null;
   is_open_source: boolean;
+  logo_url?: string;
 }
 
 function resolveIcon(name: string) {
@@ -62,6 +65,7 @@ export function rowToPluginAsset(row: PluginRow): IntegrationAsset {
     installCommand: row.install_command,
     repositoryUrl: row.repository_url ?? undefined,
     websiteUrl: row.website_url ?? undefined,
+    logoUrl: row.logo_url?.trim() || undefined,
   };
 }
 
@@ -69,7 +73,7 @@ export async function fetchPlugins(): Promise<IntegrationAsset[]> {
   if (!isSupabaseConfigured) return [];
   const { data, error } = await supabase
     .from('plugins')
-    .select('id,name,slug,tagline,description,plugin_type,icon_name,system_prompt,framework_rules,mcp_connection_string,install_command,repository_url,website_url,submitted_by,upvotes,is_open_source,created_at')
+    .select('id,name,slug,tagline,description,plugin_type,icon_name,system_prompt,framework_rules,mcp_connection_string,install_command,repository_url,website_url,submitted_by,upvotes,is_open_source,logo_url,created_at')
     .order('created_at', { ascending: false });
   if (error) {
     console.warn('[plugins] fetch failed:', error.message);
@@ -80,11 +84,16 @@ export async function fetchPlugins(): Promise<IntegrationAsset[]> {
 
 export async function createPlugin(input: PluginInput): Promise<boolean> {
   if (!isSupabaseConfigured) return false;
-  const { error } = await supabase.from('plugins').insert(input);
+  const payload = {
+    ...input,
+    logo_url: input.logo_url?.trim() || null,
+  };
+  const { error } = await supabase.from('plugins').insert(payload);
   if (error) {
     console.warn('[plugins] insert failed:', error.message);
     return false;
   }
+  await insertPluginAssetRecord(input);
   return true;
 }
 

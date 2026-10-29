@@ -27,6 +27,8 @@ import { parseProfileUsername, usePathname } from '@/lib/router';
 import { useAuthorProfile } from '@/context/AuthorProfileContext';
 import { fetchSubmissions, incrementUpvote } from '@/lib/submissions';
 import { fetchPlugins, incrementPluginUpvote } from '@/lib/plugins';
+import { fetchDirectoryStats } from '@/lib/assets';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { IntegrationAsset } from '@/data/integrations';
 
 function AppShell() {
@@ -39,19 +41,35 @@ function AppShell() {
   const { selectedAuthor } = useAuthorProfile();
   const profileUsername = parseProfileUsername(usePathname());
 
-  // Simulate a live directory: counts tick up periodically as new assets are "indexed".
   useEffect(() => {
-    const id = window.setInterval(() => {
+    let cancelled = false;
+    const applyStats = (indexedAssets: number, toolsTracked: number) => {
       setStats((prev) => [
-        { ...prev[0], value: prev[0].value + Math.floor(Math.random() * 6) + 1 },
-        {
-          ...prev[1],
-          value: prev[1].value + Math.floor(Math.random() * 4) + 1,
-        },
+        { ...prev[0], value: indexedAssets },
+        { ...prev[1], value: toolsTracked },
       ]);
-    }, 4500);
-    return () => window.clearInterval(id);
-  }, []);
+    };
+
+    const loadStats = () => {
+      fetchDirectoryStats().then((live) => {
+        if (!cancelled) applyStats(live.indexedAssets, live.toolsTracked);
+      });
+    };
+
+    loadStats();
+
+    if (!isSupabaseConfigured) return () => { cancelled = true; };
+
+    const channel = supabase
+      .channel('assets-live-stats')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assets' }, loadStats)
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      void supabase.removeChannel(channel);
+    };
+  }, [refreshKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -70,10 +88,6 @@ function AppShell() {
 
   const handleSubmitted = useCallback(() => {
     setRefreshKey((k) => k + 1);
-    setStats((prev) => [
-      { ...prev[0], value: prev[0].value + 1 },
-      { ...prev[1], value: prev[1].value + 1 },
-    ]);
   }, []);
 
   const handleToggleBookmarks = useCallback(() => {
@@ -113,7 +127,7 @@ function AppShell() {
       <CommunityModal />
       <AccountModal assets={[...communityAssets, ...pluginAssets]} />
       <ImportModal onImported={handleSubmitted} />
-      <AuthorProfileModal assets={communityAssets} />
+      <AuthorProfileModal assets={[...communityAssets, ...pluginAssets]} />
       <AssetDetailModal onUpvote={(asset) => {
         if (asset.id.startsWith('sub-')) {
           incrementUpvote(asset.id.slice(4));

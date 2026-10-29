@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabase';
+import { insertAssetRecord } from './assets';
 import { type IntegrationAsset, type AssetCategory } from '@/data/integrations';
 import {
   Sparkles, Zap, Wind, Bot, Hexagon, Headphones, ShoppingCart, MousePointerClick,
@@ -29,6 +30,7 @@ export interface SubmissionRow {
   upvotes: number;
   submitted_by: string;
   is_open_source?: boolean;
+  logo_url?: string | null;
   created_at: string;
 }
 
@@ -44,6 +46,7 @@ export interface SubmissionInput {
   mcp_connection_string: string;
   submitted_by: string;
   is_open_source: boolean;
+  logo_url?: string;
 }
 
 function resolveIcon(name: string): LucideIcon {
@@ -65,6 +68,7 @@ export function rowToAsset(row: SubmissionRow): IntegrationAsset {
     frameworkRules: row.framework_rules.split('\n').filter(Boolean),
     mcpConnectionString: row.mcp_connection_string,
     submittedBy: row.submitted_by,
+    logoUrl: row.logo_url?.trim() || undefined,
   };
 }
 
@@ -72,7 +76,7 @@ export async function fetchSubmissions(): Promise<IntegrationAsset[]> {
   if (!isSupabaseConfigured) return [];
   const { data, error } = await supabase
     .from('submissions')
-    .select('id,name,tagline,description,category,accent,icon_name,system_prompt,framework_rules,mcp_connection_string,upvotes,submitted_by,is_open_source,created_at')
+    .select('id,name,tagline,description,category,accent,icon_name,system_prompt,framework_rules,mcp_connection_string,upvotes,submitted_by,is_open_source,logo_url,created_at')
     .order('created_at', { ascending: false });
   if (error) {
     console.warn('[submissions] fetch failed:', error.message);
@@ -86,11 +90,16 @@ export async function createSubmission(input: SubmissionInput): Promise<boolean>
     console.warn('[submissions] not configured — skipping persist');
     return false;
   }
-  const { error } = await supabase.from('submissions').insert(input);
+  const payload = {
+    ...input,
+    logo_url: input.logo_url?.trim() || null,
+  };
+  const { error } = await supabase.from('submissions').insert(payload);
   if (error) {
     console.warn('[submissions] insert failed:', error.message);
     return false;
   }
+  await insertAssetRecord(input);
   return true;
 }
 

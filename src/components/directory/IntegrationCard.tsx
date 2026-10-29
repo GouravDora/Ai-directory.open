@@ -3,14 +3,14 @@ import {
   ArrowBigUp,
   Bookmark,
   BookmarkCheck,
-  User,
   ArrowUpRight,
 } from 'lucide-react';
 import { getAssetLanguages, type IntegrationAsset } from '@/data/integrations';
 import { SourceBadge } from './SourceBadge';
+import { AssetLogo } from './AssetLogo';
+import { AuthorLink } from './AuthorLink';
 import { useToast } from '@/context/ToastContext';
 import { useBookmarks } from '@/context/BookmarkContext';
-import { useAuthorProfile } from '@/context/AuthorProfileContext';
 import { useAssetDetail } from '@/context/AssetDetailContext';
 
 interface Props {
@@ -22,11 +22,8 @@ export function IntegrationCard({ asset, onUpvote }: Props) {
   const [upvoted, setUpvoted] = useState(false);
   const { notify } = useToast();
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const { openAuthor } = useAuthorProfile();
   const { openDetail } = useAssetDetail();
 
-  const Icon = asset.icon;
-  const Logo = asset.logo;
   const bookmarked = isBookmarked(asset.id);
 
   const accentText = asset.accent === 'green' ? 'text-emerald-400' : 'text-violet-400';
@@ -60,15 +57,7 @@ export function IntegrationCard({ asset, onUpvote }: Props) {
     >
       <div className="p-5">
         <div className="flex items-start gap-4">
-          <span
-            className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl border bg-obsidian-800 ${accentSoft}`}
-          >
-            {Logo ? (
-              <Logo className={`h-7 w-7 ${accentText}`} />
-            ) : (
-              <Icon className={`h-6 w-6 ${accentText}`} strokeWidth={1.75} />
-            )}
-          </span>
+          <AssetLogo asset={asset} />
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="truncate text-base font-semibold text-obsidian-100">{asset.name}</h3>
@@ -78,19 +67,7 @@ export function IntegrationCard({ asset, onUpvote }: Props) {
               </span>
             </div>
             <p className={`text-xs font-medium ${accentText}`}>{asset.tagline}</p>
-            {asset.submittedBy && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openAuthor(asset.submittedBy!);
-                }}
-                className="mt-1 inline-flex items-center gap-1 text-[11px] text-obsidian-300 transition-colors hover:text-obsidian-100"
-              >
-                <User className="h-3 w-3" />
-                by {asset.submittedBy}
-              </button>
-            )}
+            {asset.submittedBy && <AuthorLink name={asset.submittedBy} />}
           </div>
           <ArrowUpRight className="h-4 w-4 shrink-0 text-obsidian-400 transition-all duration-200 group-hover:text-obsidian-200" />
         </div>

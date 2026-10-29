@@ -4,6 +4,7 @@ import { useSubmissionModal } from '@/context/SubmissionModalContext';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { createSubmission, ICON_REGISTRY } from '@/lib/submissions';
+import { isHttpUrl } from '@/lib/assets';
 import { CATEGORY_FILTERS, type AssetCategory } from '@/data/integrations';
 
 const ICON_CHOICES = [
@@ -30,6 +31,7 @@ const EMPTY = {
   framework_rules: '',
   mcp_connection_string: '',
   is_open_source: false,
+  logo_url: '',
 };
 
 function Field({
@@ -93,6 +95,7 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
     if (!form.description.trim()) e.description = 'Required';
     if (!form.system_prompt.trim()) e.system_prompt = 'Required';
     if (!form.mcp_connection_string.trim()) e.mcp_connection_string = 'Required';
+    if (form.logo_url.trim() && !isHttpUrl(form.logo_url.trim())) e.logo_url = 'Enter a valid http(s) image URL';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -103,7 +106,8 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
     setSubmitting(true);
     const ok = await createSubmission({
       ...form,
-      submitted_by: user?.name ?? 'Anonymous',
+      submitted_by: user?.username ?? user?.name ?? 'Anonymous',
+      logo_url: form.logo_url.trim(),
     });
     setSubmitting(false);
     if (ok) {
@@ -246,6 +250,18 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
                   </button>
                 ))}
               </div>
+            </Field>
+          </div>
+
+          <div className="mt-4">
+            <Field label="Logo Image URL" hint="Optional. If set, this image is shown instead of the Lucide icon.">
+              <input
+                className={inputCls}
+                value={form.logo_url}
+                onChange={(e) => set('logo_url', e.target.value)}
+                placeholder="https://example.com/logo.png"
+              />
+              {errors.logo_url && <span className="text-[11px] text-rose-400">{errors.logo_url}</span>}
             </Field>
           </div>
 

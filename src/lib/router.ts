@@ -6,6 +6,21 @@ export function profilePath(username: string): string {
   return `/profile/${username}`;
 }
 
+export function toAuthorUsername(name: string): string {
+  const slug = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 30);
+  if (slug.length >= 3) return slug;
+  return `${slug || 'user'}-author`.slice(0, 30);
+}
+
+export function openAuthorProfile(name: string): void {
+  navigate(profilePath(toAuthorUsername(name)));
+}
+
 export function parseProfileUsername(pathname: string): string | null {
   const match = PROFILE_PATH.exec(pathname.toLowerCase());
   return match ? match[1] : null;

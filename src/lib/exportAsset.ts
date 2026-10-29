@@ -12,6 +12,7 @@ export interface ExportedAsset {
   mcp_connection_string: string;
   upvotes: number;
   is_open_source: boolean;
+  logo_url?: string;
 }
 
 /**
@@ -31,6 +32,7 @@ export function buildAssetJson(asset: IntegrationAsset): string {
     mcp_connection_string: asset.mcpConnectionString,
     upvotes: asset.upvotes,
     is_open_source: asset.isOpenSource,
+    ...(asset.logoUrl ? { logo_url: asset.logoUrl } : {}),
   };
   return JSON.stringify(payload, null, 2);
 }

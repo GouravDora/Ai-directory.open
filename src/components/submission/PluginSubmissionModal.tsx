@@ -4,13 +4,14 @@ import { usePluginSubmission } from '@/context/PluginSubmissionContext';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { createPlugin } from '@/lib/plugins';
+import { isHttpUrl } from '@/lib/assets';
 import { fetchCompanies, type Company } from '@/lib/community';
 
 const inputCls = 'w-full rounded-lg border border-obsidian-700/70 bg-obsidian-950/60 px-3 py-2 text-sm text-obsidian-100 placeholder:text-obsidian-300 outline-none transition-all focus:border-emerald-500/50';
 const EMPTY = {
   name: '', slug: '', tagline: '', description: '', plugin_type: 'AI Plugin', icon_name: 'Plug',
   system_prompt: '', framework_rules: '', mcp_connection_string: '', install_command: '',
-  repository_url: '', website_url: '', company_id: null as string | null, is_open_source: false,
+  repository_url: '', website_url: '', company_id: null as string | null, is_open_source: false, logo_url: '',
 };
 
 function Field({ label, hint, required, children }: { label: string; hint?: string; required?: boolean; children: React.ReactNode }) {
@@ -44,9 +45,13 @@ export function PluginSubmissionModal({ onSubmitted }: { onSubmitted: () => void
       setError('Name, tagline, description, and install command are required.');
       return;
     }
+    if (form.logo_url.trim() && !isHttpUrl(form.logo_url.trim())) {
+      setError('Logo Image URL must be a valid http(s) link.');
+      return;
+    }
     setSubmitting(true);
     setError('');
-    const ok = await createPlugin({ ...form, slug: form.slug.trim() || form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''), submitted_by: user?.name ?? 'Community' });
+    const ok = await createPlugin({ ...form, slug: form.slug.trim() || form.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''), submitted_by: user?.username ?? user?.name ?? 'Community', logo_url: form.logo_url.trim() });
     setSubmitting(false);
     if (!ok) { setError('Could not publish this plugin right now. Please try again.'); return; }
     notify('Plugin published — it is now live in the directory!');
@@ -63,6 +68,7 @@ export function PluginSubmissionModal({ onSubmitted }: { onSubmitted: () => void
         <div className="grid gap-4 sm:grid-cols-2"><Field label="Tagline" required><input className={inputCls} value={form.tagline} onChange={(e) => set('tagline', e.target.value)} placeholder="Turn issues into release notes" /></Field><Field label="Slug" hint="Optional URL-friendly identifier"><input className={inputCls} value={form.slug} onChange={(e) => set('slug', e.target.value)} placeholder="github-release-notes" /></Field></div>
         <Field label="Description" required><textarea className={`${inputCls} min-h-[72px] resize-y`} value={form.description} onChange={(e) => set('description', e.target.value)} placeholder="Explain who this plugin helps and what it does." /></Field>
         <Field label="Source type"><div className="flex gap-2"><button type="button" onClick={() => set('is_open_source', true)} className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold ${form.is_open_source ? 'border-neon-green/50 bg-neon-green/10 text-neon-green' : 'border-obsidian-700/60 text-obsidian-200'}`}>Open Source</button><button type="button" onClick={() => set('is_open_source', false)} className={`flex-1 rounded-lg border px-3 py-2 text-xs font-semibold ${!form.is_open_source ? 'border-obsidian-500 bg-obsidian-800 text-obsidian-200' : 'border-obsidian-700/60 text-obsidian-200'}`}>Closed Source</button></div></Field>
+        <Field label="Logo Image URL" hint="Optional custom logo. Falls back to the default plugin icon if empty."><input className={inputCls} value={form.logo_url} onChange={(e) => set('logo_url', e.target.value)} placeholder="https://example.com/logo.png" /></Field>
         <Field label="Install command" required hint="The command developers copy to install it"><input className={`${inputCls} font-mono text-xs`} value={form.install_command} onChange={(e) => set('install_command', e.target.value)} placeholder="npx -y @your-org/your-plugin" /></Field>
         <div className="grid gap-4 sm:grid-cols-3"><Field label="Repository URL"><input className={inputCls} value={form.repository_url} onChange={(e) => set('repository_url', e.target.value)} placeholder="https://github.com/..." /></Field><Field label="Website URL"><input className={inputCls} value={form.website_url} onChange={(e) => set('website_url', e.target.value)} placeholder="https://yourplugin.dev" /></Field><Field label="Company"><select className={inputCls} value={form.company_id ?? ''} onChange={(e) => set('company_id', e.target.value || null)}><option value="">Independent</option>{companies.map((company) => <option key={company.id} value={company.id}>{company.name}</option>)}</select></Field></div>
         <div className="border-t border-obsidian-700/60 pt-4"><Field label="System prompt" hint="Optional prompt the plugin uses"><textarea className={`${inputCls} min-h-[90px] resize-y font-mono text-xs`} value={form.system_prompt} onChange={(e) => set('system_prompt', e.target.value)} placeholder="You are a focused plugin assistant..." /></Field></div>
