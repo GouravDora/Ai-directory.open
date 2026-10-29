@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-obsidian-950 text-obsidian-100 font-sans antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(177, 108, 255, 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(57, 255, 136, 0.05), transparent);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    @apply bg-neon-green/30 text-white;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-obsidian-950;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-obsidian-600 rounded-full border-2 border-solid border-obsidian-950;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-obsidian-500;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-obsidian-900/70 backdrop-blur-xl border border-obsidian-700/60;
+  }
+
+  .card-surface {
+    @apply bg-obsidian-850/80 border border-obsidian-700/50 backdrop-blur-sm;
+  }
+
+  .neon-divider {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(57, 255, 136, 0.4),
+      rgba(177, 108, 255, 0.4),
+      transparent
+    );
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, #ffffff 0%, #c5c5d2 50%, #9a9aab 100%);
+  }
+
+  .text-gradient-neon {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(120deg, #39ff88 0%, #b16cff 100%);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium
+      transition-all duration-200 active:scale-[0.97];
+  }
+
+  /* Animated grid backdrop */
+  .grid-backdrop {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 75%);
+  }
+}
+
+@layer utilities {
+  .animate-delay-100 {
+    animation-delay: 0.1s;
+  }
+  .animate-delay-200 {
+    animation-delay: 0.2s;
+  }
+  .animate-delay-300 {
+    animation-delay: 0.3s;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
