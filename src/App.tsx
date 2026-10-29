@@ -25,8 +25,8 @@ import { AccountModal } from '@/components/header/AccountModal';
 import { ProfilePage } from '@/components/profile/ProfilePage';
 import { parseProfileUsername, usePathname } from '@/lib/router';
 import { useAuthorProfile } from '@/context/AuthorProfileContext';
-import { fetchSubmissions, incrementUpvote } from '@/lib/submissions';
-import { fetchPlugins, incrementPluginUpvote } from '@/lib/plugins';
+import { fetchSubmissions } from '@/lib/submissions';
+import { fetchPlugins } from '@/lib/plugins';
 import { fetchDirectoryStats } from '@/lib/assets';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import type { IntegrationAsset } from '@/data/integrations';
@@ -62,7 +62,8 @@ function AppShell() {
 
     const channel = supabase
       .channel('assets-live-stats')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'assets' }, loadStats)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'submissions' }, loadStats)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'plugins' }, loadStats)
       .subscribe();
 
     return () => {
@@ -128,13 +129,7 @@ function AppShell() {
       <AccountModal assets={[...communityAssets, ...pluginAssets]} />
       <ImportModal onImported={handleSubmitted} />
       <AuthorProfileModal assets={[...communityAssets, ...pluginAssets]} />
-      <AssetDetailModal onUpvote={(asset) => {
-        if (asset.id.startsWith('sub-')) {
-          incrementUpvote(asset.id.slice(4));
-        } else if (asset.id.startsWith('plugin-')) {
-          incrementPluginUpvote(asset.id.slice(7));
-        }
-      }} />
+      <AssetDetailModal />
     </div>
   );
 }

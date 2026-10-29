@@ -31,6 +31,7 @@ export interface SubmissionRow {
   submitted_by: string;
   is_open_source?: boolean;
   logo_url?: string | null;
+  assets_id?: string | null;
   created_at: string;
 }
 
@@ -49,7 +50,7 @@ export interface SubmissionInput {
   logo_url?: string;
 }
 
-function resolveIcon(name: string): LucideIcon {
+export function resolveIcon(name: string): LucideIcon {
   return ICON_REGISTRY[name] ?? ICON_REGISTRY.Sparkles;
 }
 
@@ -69,6 +70,7 @@ export function rowToAsset(row: SubmissionRow): IntegrationAsset {
     mcpConnectionString: row.mcp_connection_string,
     submittedBy: row.submitted_by,
     logoUrl: row.logo_url?.trim() || undefined,
+    assetId: row.assets_id ?? undefined,
   };
 }
 

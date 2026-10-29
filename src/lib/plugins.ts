@@ -21,6 +21,7 @@ export interface PluginRow {
   upvotes: number;
   is_open_source?: boolean;
   logo_url?: string | null;
+  assets_id?: string | null;
   created_at: string;
 }
 
@@ -66,6 +67,7 @@ export function rowToPluginAsset(row: PluginRow): IntegrationAsset {
     repositoryUrl: row.repository_url ?? undefined,
     websiteUrl: row.website_url ?? undefined,
     logoUrl: row.logo_url?.trim() || undefined,
+    assetId: row.assets_id ?? undefined,
   };
 }
 
@@ -73,7 +75,7 @@ export async function fetchPlugins(): Promise<IntegrationAsset[]> {
   if (!isSupabaseConfigured) return [];
   const { data, error } = await supabase
     .from('plugins')
-    .select('id,name,slug,tagline,description,plugin_type,icon_name,system_prompt,framework_rules,mcp_connection_string,install_command,repository_url,website_url,submitted_by,upvotes,is_open_source,logo_url,created_at')
+    .select('id,name,slug,tagline,description,plugin_type,icon_name,system_prompt,framework_rules,mcp_connection_string,install_command,repository_url,website_url,submitted_by,upvotes,is_open_source,logo_url,created_at,assets_id')
     .order('created_at', { ascending: false });
   if (error) {
     console.warn('[plugins] fetch failed:', error.message);

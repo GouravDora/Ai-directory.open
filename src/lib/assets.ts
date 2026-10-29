@@ -16,23 +16,33 @@ function asCount(value: number | null | undefined): number {
 export async function fetchDirectoryStats(): Promise<DirectoryStats> {
   if (!isSupabaseConfigured) return EMPTY_STATS;
 
-  const [{ count, error }, authors] = await Promise.all([
-    supabase.from('assets').select('id', { count: 'exact', head: true }),
-    supabase.from('assets').select('submitted_by'),
+  const [subCount, pluginCount, subs, plugins] = await Promise.all([
+    supabase.from('submissions').select('id', { count: 'exact', head: true }),
+    supabase.from('plugins').select('id', { count: 'exact', head: true }),
+    supabase.from('submissions').select('submitted_by'),
+    supabase.from('plugins').select('submitted_by'),
   ]);
 
-  if (error) {
-    console.warn('[assets] count failed:', error.message);
+  if (subCount.error || pluginCount.error) {
+    console.warn(
+      '[assets] count failed:',
+      subCount.error?.message ?? pluginCount.error?.message,
+    );
     return EMPTY_STATS;
   }
 
-  const indexedAssets = asCount(count);
-  const uniqueAuthors = new Set(
-    (authors.data ?? [])
-      .map((row) => (row.submitted_by ?? '').trim().toLowerCase())
-      .filter(Boolean),
-  );
-  const toolsTracked = authors.error ? indexedAssets : uniqueAuthors.size || indexedAssets;
+  const indexedAssets = asCount(subCount.count) + asCount(pluginCount.count);
+
+  const uniqueAuthors = new Set<string>();
+  for (const row of (subs.data ?? [])) {
+    const v = (row.submitted_by ?? '').trim().toLowerCase();
+    if (v) uniqueAuthors.add(v);
+  }
+  for (const row of (plugins.data ?? [])) {
+    const v = (row.submitted_by ?? '').trim().toLowerCase();
+    if (v) uniqueAuthors.add(v);
+  }
+  const toolsTracked = uniqueAuthors.size || indexedAssets;
 
   return { indexedAssets, toolsTracked };
 }

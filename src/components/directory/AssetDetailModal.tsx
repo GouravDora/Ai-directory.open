@@ -13,8 +13,8 @@ import {
   BookmarkCheck,
   ExternalLink,
   FileText,
+  Plus,
 } from 'lucide-react';
-import { type IntegrationAsset } from '@/data/integrations';
 import { getOfficialSiteUrl } from '@/data/officialSites';
 import { useAssetDetail } from '@/context/AssetDetailContext';
 import { useToast } from '@/context/ToastContext';
@@ -24,6 +24,8 @@ import { AddToToolMenu } from './AddToToolMenu';
 import { SourceBadge } from './SourceBadge';
 import { AssetLogo } from './AssetLogo';
 import { AuthorLink } from './AuthorLink';
+import { AddToStackModal } from '@/components/profile/AddToStackModal';
+import { secureUpvoteAsset } from '@/lib/upvotes';
 
 type TabKey = 'system' | 'rules' | 'mcp';
 
@@ -72,16 +74,13 @@ function CodeBlock({ code }: { code: string }) {
   );
 }
 
-interface Props {
-  onUpvote?: (asset: IntegrationAsset) => void;
-}
-
-export function AssetDetailModal({ onUpvote }: Props) {
+export function AssetDetailModal() {
   const { selectedAsset, closeDetail } = useAssetDetail();
   const { notify } = useToast();
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const [tab, setTab] = useState<TabKey>('system');
   const [upvoted, setUpvoted] = useState(false);
+  const [addToStackOpen, setAddToStackOpen] = useState(false);
 
   useEffect(() => {
     if (!selectedAsset) return;
@@ -107,10 +106,19 @@ export function AssetDetailModal({ onUpvote }: Props) {
   const bookmarked = isBookmarked(asset.id);
   const accentText = asset.accent === 'green' ? 'text-emerald-400' : 'text-violet-400';
 
-  const handleUpvote = () => {
+  const handleUpvote = async () => {
+    if (!asset.assetId) {
+      notify('Sign in to upvote.');
+      return;
+    }
     setUpvoted((v) => !v);
-    notify(upvoted ? 'Upvote removed' : 'Upvoted — thanks for the signal!');
-    if (!upvoted) onUpvote?.(asset);
+    const result = await secureUpvoteAsset(asset.assetId);
+    if (result === null) {
+      setUpvoted((v) => !v);
+      notify('You must be signed in to upvote.');
+      return;
+    }
+    notify(result === 'upvoted' ? 'Upvoted — thanks for the signal!' : 'Upvote removed.');
   };
 
   const handleBookmark = () => {
@@ -219,22 +227,36 @@ export function AssetDetailModal({ onUpvote }: Props) {
             </div>
           )}
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={handleUpvote}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all active:scale-95 ${
-                upvoted
-                  ? asset.accent === 'green'
-                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
-                    : 'border-violet-500/30 bg-violet-500/10 text-violet-400'
-                  : 'border-obsidian-700/60 bg-obsidian-850/60 text-obsidian-200 hover:border-obsidian-500 hover:text-obsidian-100'
-              }`}
-            >
-              <ArrowBigUp className="h-4 w-4" fill={upvoted ? 'currentColor' : 'none'} />
-              <span className="font-mono tabular-nums">
-                {asset.upvotes + (upvoted ? 1 : 0)}
-              </span>
-            </button>
+              <button
+                type="button"
+                onClick={handleUpvote}
+                className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all active:scale-95 ${
+                  upvoted
+                    ? asset.accent === 'green'
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                      : 'border-violet-500/30 bg-violet-500/10 text-violet-400'
+                    : 'border-obsidian-700/60 bg-obsidian-850/60 text-obsidian-200 hover:border-obsidian-500 hover:text-obsidian-100'
+                }`}
+              >
+                <ArrowBigUp className="h-4 w-4" fill={upvoted ? 'currentColor' : 'none'} />
+                <span className="font-mono tabular-nums">
+                  {asset.upvotes + (upvoted ? 1 : 0)}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAddToStackOpen(true);
+                }}
+                className={asset.assetId
+                  ? 'inline-flex items-center gap-1.5 rounded-lg border border-obsidian-700/60 px-3 py-1.5 text-xs font-medium bg-obsidian-850/60 text-obsidian-200 hover:border-obsidian-500 hover:text-obsidian-100 transition-all active:scale-95'
+                  : 'inline-flex items-center gap-1.5 rounded-lg border border-obsidian-700/60 px-3 py-1.5 text-xs font-medium bg-obsidian-800/50 text-obsidian-400 cursor-not-allowed transition-all active:scale-95'}
+                disabled={!asset.assetId}
+              >
+                <Plus className="h-4 w-4" />
+                {asset.assetId ? 'Add to Stack' : 'Sign in'}
+              </button>
 
             <button
               type="button"
@@ -343,6 +365,15 @@ export function AssetDetailModal({ onUpvote }: Props) {
           </div>
         </div>
       </div>
+
+      {asset.assetId && addToStackOpen && (
+        <AddToStackModal
+          open={addToStackOpen}
+          assetId={asset.assetId}
+          assetName={asset.name}
+          onClose={() => setAddToStackOpen(false)}
+        />
+      )}
     </div>
   );
 }
