@@ -10,19 +10,24 @@ import {
   type ProfileRow,
   type ProfileStats,
 } from '@/lib/profiles';
+import { fetchUserUpvotedAssets, type UpvotedAsset } from '@/lib/upvotes';
+import { fetchStacksByUserWithItems, type StackWithItems } from '@/lib/stacks';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileStatCards } from './ProfileStatCards';
 import { ProfileOverview } from './ProfileOverview';
 import { ProfileActivity } from './ProfileActivity';
 import { ProfileCompanies } from './ProfileCompanies';
+import { ProfileStacks } from './ProfileStacks';
 import { EditProfileModal } from './EditProfileModal';
 
-type TabKey = 'overview' | 'activity' | 'companies';
+type TabKey = 'overview' | 'activity' | 'stacks' | 'companies';
 
 interface LoadedProfile {
   profile: ProfileRow;
   stats: ProfileStats;
   entries: ProfileEntry[];
+  upvoted: UpvotedAsset[];
+  stacks: StackWithItems[];
 }
 
 type LoadState =
@@ -50,8 +55,13 @@ export function ProfilePage({ username }: { username: string }) {
           setState({ status: 'missing' });
           return;
         }
-        const [stats, entries] = await Promise.all([fetchProfileStats(profile.id), fetchProfileEntries(profile.id)]);
-        if (active) setState({ status: 'ready', data: { profile, stats, entries } });
+        const [stats, entries, upvoted, stacks] = await Promise.all([
+          fetchProfileStats(profile.id),
+          fetchProfileEntries(profile.id),
+          fetchUserUpvotedAssets(profile.id),
+          fetchStacksByUserWithItems(profile.id),
+        ]);
+        if (active) setState({ status: 'ready', data: { profile, stats, entries, upvoted, stacks } });
       } catch (err) {
         console.warn('[profile] load failed:', err instanceof Error ? err.message : err);
         if (active) setState({ status: 'error' });
@@ -113,6 +123,7 @@ export function ProfilePage({ username }: { username: string }) {
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'overview', label: 'Overview' },
     { key: 'activity', label: 'Activity' },
+    { key: 'stacks', label: 'Stacks' },
     ...(isBusiness ? [{ key: 'companies' as const, label: 'Companies' }] : []),
   ];
 
@@ -160,7 +171,8 @@ export function ProfilePage({ username }: { username: string }) {
 
         <div className="pt-6">
           {tab === 'overview' && <ProfileOverview entries={entries} />}
-          {tab === 'activity' && <ProfileActivity entries={entries} />}
+          {tab === 'activity' && <ProfileActivity upvoted={upvoted} isOwner={isOwner} />}
+          {tab === 'stacks' && <ProfileStacks stacks={stacks} isOwner={isOwner} viewerId={user?.id ?? null} />}
           {tab === 'companies' && isBusiness && <ProfileCompanies ownerId={profile.id} isOwner={isOwner} />}
         </div>
       </div>

@@ -103,6 +103,7 @@ export interface IntegrationAsset {
   installCommand?: string;
   repositoryUrl?: string;
   websiteUrl?: string;
+  assetId?: string;
   languages?: string[];
 }
 

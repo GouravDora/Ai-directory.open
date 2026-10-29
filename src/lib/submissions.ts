@@ -31,6 +31,7 @@ export interface SubmissionRow {
   submitted_by: string;
   is_open_source?: boolean;
   logo_url?: string | null;
+  assets_id?: string | null;
   created_at: string;
 }
 
@@ -69,6 +70,7 @@ export function rowToAsset(row: SubmissionRow): IntegrationAsset {
     mcpConnectionString: row.mcp_connection_string,
     submittedBy: row.submitted_by,
     logoUrl: row.logo_url?.trim() || undefined,
+    assetId: row.assets_id ?? undefined,
   };
 }
 

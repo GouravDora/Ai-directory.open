@@ -37,9 +37,9 @@ export interface ProfileUpdate {
 }
 
 const SUBMISSION_COLUMNS =
-  'id,name,tagline,description,category,accent,icon_name,system_prompt,framework_rules,mcp_connection_string,upvotes,submitted_by,is_open_source,logo_url,created_at';
+  'id,name,tagline,description,category,accent,icon_name,system_prompt,framework_rules,mcp_connection_string,upvotes,submitted_by,is_open_source,logo_url,created_at,assets_id';
 const PLUGIN_COLUMNS =
-  'id,name,slug,tagline,description,plugin_type,icon_name,system_prompt,framework_rules,mcp_connection_string,install_command,repository_url,website_url,submitted_by,upvotes,is_open_source,logo_url,created_at';
+  'id,name,slug,tagline,description,plugin_type,icon_name,system_prompt,framework_rules,mcp_connection_string,install_command,repository_url,website_url,submitted_by,upvotes,is_open_source,logo_url,created_at,assets_id';
 
 export async function fetchProfileByUsername(username: string): Promise<ProfileRow | null> {
   if (!isSupabaseConfigured) return null;
