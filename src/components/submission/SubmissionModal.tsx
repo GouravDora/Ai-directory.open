@@ -139,7 +139,7 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
               Share a Prompt, Rule, or Config
             </h2>
             <p className="mt-0.5 text-xs text-obsidian-300">
-              Share your AI rule, MCP server, or prompt with the community.
+              Share a text-based asset — system prompt, framework rules, or MCP connection string.
             </p>
           </div>
           <button
@@ -175,7 +175,11 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
           </div>
 
           <div className="mt-5 space-y-4 border-t border-obsidian-700/60 pt-5">
+<<<<<<< HEAD
             <Field label="System Prompt" required hint="The tab content shown under System Prompt">
+=======
+            <Field label="System Prompt" required hint="The core instructions that define this asset's behavior">
+>>>>>>> 9f91ac43a03608d7b60b83bbf36ef60892758e05
               <textarea
                 className={`${inputCls} min-h-[110px] resize-y font-mono text-xs`}
                 value={form.system_prompt}
@@ -196,7 +200,11 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
               />
             </Field>
 
+<<<<<<< HEAD
             <Field label="MCP Connection String" required>
+=======
+            <Field label="MCP Connection String" required hint="The MCP endpoint this asset connects to">
+>>>>>>> 9f91ac43a03608d7b60b83bbf36ef60892758e05
               <input
                 className={`${inputCls} font-mono text-xs`}
                 value={form.mcp_connection_string}
@@ -344,7 +352,7 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
               ) : (
                 <Send className="h-4 w-4" />
               )}
-              {submitting ? 'Publishing…' : 'Publish asset'}
+              {submitting ? 'Publishing…' : 'Publish prompt/rule'}
             </button>
           </div>
 

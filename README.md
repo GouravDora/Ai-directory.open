@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI Directory
 
 AI Directory is an open-source frontend UI for discovering, upvoting, and organizing AI tools — MCP servers, IDE plugins, prompts, AI assistants, web builders, and more. It's built as a modern, community-driven directory where builders can submit assets, track upvotes, and curate personal collections with the Stack Builder feature.
@@ -116,3 +117,24 @@ This project is licensed under the MIT License — see the [LICENSE](LICENSE) fi
 ## Live Demo
 
 Hosted version: https://ai-directory-in.vercel.app/
+=======
+# 🌐 AI Directory - Open Source Starter Kit
+
+Welcome to the open-source frontend of **AI Directory**! This is a modern, fast, and beautiful directory for AI Rules, MCPs, and Prompts. 
+
+This repository contains the **frontend UI** of the project. You can use this to build your own AI directory or contribute to the main hosted version.
+
+👉 **Check out the live hosted version here:** [https://ai-directory-in.vercel.app/](https://ai-directory-in.vercel.app/)
+
+## ✨ Features
+- **Modern UI:** Built with React, Vite, and Tailwind CSS.
+- **Open/Closed Source Filters:** Easily distinguish between proprietary and open-source AI tools.
+- **Stack Builder:** Create and share your own collections of AI tools.
+- **Authentication:** Integrated with Supabase for user profiles and upvotes.
+
+## 🚀 How to Run Locally
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/GouravDora/Ai-directory.open.git
+>>>>>>> 9f91ac43a03608d7b60b83bbf36ef60892758e05
