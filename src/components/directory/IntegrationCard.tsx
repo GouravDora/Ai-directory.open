@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { getAssetLanguages, type IntegrationAsset } from '@/data/integrations';
 import { SourceBadge } from './SourceBadge';
+import { AssetTypeBadge } from './AssetTypeBadge';
 import { AssetLogo } from './AssetLogo';
 import { AuthorLink } from './AuthorLink';
 import { useToast } from '@/context/ToastContext';
@@ -62,6 +63,7 @@ export function IntegrationCard({ asset, onUpvote }: Props) {
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="truncate text-base font-semibold text-obsidian-100">{asset.name}</h3>
               <SourceBadge isOpenSource={asset.isOpenSource} />
+              <AssetTypeBadge asset={asset} />
               <span className="rounded-full border border-obsidian-700/60 bg-obsidian-800 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-obsidian-300">
                 {asset.category}
               </span>
