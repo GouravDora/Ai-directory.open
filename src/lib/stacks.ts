@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { isSupabaseConfigured, supabase } from './supabase';
 import type { IntegrationAsset } from '@/data/integrations';
-<<<<<<< HEAD
 import { assetRowToAsset, type AssetRow } from './upvotes';
-=======
-import { assetRowToAsset } from './upvotes';
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
 
 const STACK_ASSET_COLUMNS =
   'id,name,tagline,description,category,accent,icon_name,system_prompt,framework_rules,mcp_connection_string,upvotes,submitted_by,is_open_source,logo_url,created_at';
@@ -80,7 +76,6 @@ export async function fetchStackWithItems(stackId: string): Promise<StackWithIte
   }
   if (!data) return null;
 
-<<<<<<< HEAD
   const stack = (data as unknown) as Stack & {
     stack_items: Array<{ asset_id: string; created_at: string; assets: AssetRow | AssetRow[] | null }>;
   };
@@ -92,14 +87,6 @@ export async function fetchStackWithItems(stackId: string): Promise<StackWithIte
       return assetRowToAsset(assetRow, si.asset_id);
     })
     .filter((a): a is IntegrationAsset => a !== null);
-=======
-  const stack = data as Stack & {
-    stack_items: Array<{ asset_id: string; created_at: string; assets: { id: string } & Record<string, unknown> | null }>;
-  };
-  const items = (stack.stack_items ?? [])
-    .filter((si) => si.assets)
-    .map((si) => assetRowToAsset(si.assets as any, si.asset_id));
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
 
   return {
     id: stack.id,
