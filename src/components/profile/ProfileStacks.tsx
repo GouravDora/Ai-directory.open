@@ -1,16 +1,6 @@
-<<<<<<< HEAD
 import { Plus, ArrowRight } from 'lucide-react';
 import { useAssetDetail } from '@/context/AssetDetailContext';
 import type { StackWithItems } from '@/lib/stacks';
-=======
-import { useState } from 'react';
-import { Plus, ArrowRight } from 'lucide-react';
-import { useAssetDetail } from '@/context/AssetDetailContext';
-import { useToast } from '@/context/ToastContext';
-import type { StackWithItems } from '@/lib/stacks';
-import { navigate } from '@/lib/router';
-import { StackManagerModal } from './StackManagerModal';
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
 
 interface Props {
   stacks: StackWithItems[];
@@ -20,11 +10,6 @@ interface Props {
 
 export function ProfileStacks({ stacks, isOwner, viewerId }: Props) {
   const { openDetail } = useAssetDetail();
-<<<<<<< HEAD
-=======
-  const { notify } = useToast();
-  const [managing, setManaging] = useState(false);
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
 
   if (stacks.length === 0) {
     if (isOwner && viewerId) {
@@ -33,10 +18,6 @@ export function ProfileStacks({ stacks, isOwner, viewerId }: Props) {
           <p className="mb-4 text-sm text-obsidian-300">No stacks yet.</p>
           <button
             type="button"
-<<<<<<< HEAD
-=======
-            onClick={() => setManaging(true)}
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
             className="inline-flex items-center gap-1.5 rounded-lg border border-obsidian-700/70 bg-obsidian-850/80 px-4 py-2 text-xs font-medium text-obsidian-200 hover:border-neon-green/40 hover:text-neon-green"
           >
             <Plus className="h-4 w-4" /> Create your first stack
@@ -68,19 +49,6 @@ export function ProfileStacks({ stacks, isOwner, viewerId }: Props) {
                 {stack.itemCount} asset{stack.itemCount !== 1 ? 's' : ''} <span aria-hidden="true">•</span> {new Date(stack.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
             </div>
-<<<<<<< HEAD
-=======
-            {isOwner && viewerId && (
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); setManaging(true); }}
-                className="rounded-lg border border-obsidian-700/70 bg-obsidian-850/80 px-2.5 py-1.5 text-xs font-medium text-obsidian-300 hover:border-neon-green/40 hover:text-neon-green"
-                aria-label="Manage stack"
-              >
-                Manage
-              </button>
-            )}
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
           </div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {stack.items.map((asset) => (
@@ -101,18 +69,6 @@ export function ProfileStacks({ stacks, isOwner, viewerId }: Props) {
           </div>
         </section>
       ))}
-<<<<<<< HEAD
-=======
-      {isOwner && viewerId && (
-        <button
-          type="button"
-          onClick={() => setManaging(true)}
-          className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-obsidian-700/70 bg-obsidian-850/80 px-4 py-2 text-xs font-medium text-obsidian-200 hover:border-neon-green/40 hover:text-neon-green"
-        >
-          <Plus className="h-4 w-4" /> Create another stack
-        </button>
-      )}
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
     </div>
   );
 }

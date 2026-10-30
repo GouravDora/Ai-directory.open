@@ -5,12 +5,7 @@ import { resolveIcon } from './submissions';
 const ASSET_COLUMNS =
   'id,name,tagline,description,category,accent,icon_name,system_prompt,framework_rules,mcp_connection_string,upvotes,submitted_by,is_open_source,logo_url,created_at';
 
-<<<<<<< HEAD
 export interface AssetRow {  id: string;
-=======
-interface AssetRow {
-  id: string;
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
   name: string;
   tagline: string;
   description: string;
@@ -63,11 +58,7 @@ export async function secureUpvoteAsset(assetId: string): Promise<UpvoteResult |
   return (data as UpvoteResult | null) ?? null;
 }
 
-<<<<<<< HEAD
 export async function fetchUserUpvotedAssets(userId: string): Promise<UpvotedAsset[]> {
-=======
-export async function fetchUserUpvotedAssets(userId: string): Promise<IntegrationAsset[]> {
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
   if (!isSupabaseConfigured) return [];
   const { data, error } = await supabase
     .from('upvotes')
@@ -78,7 +69,6 @@ export async function fetchUserUpvotedAssets(userId: string): Promise<Integratio
     console.warn('[upvotes] fetch user upvoted assets failed:', error.message);
     return [];
   }
-<<<<<<< HEAD
   const rows = (data as unknown) as Array<{ asset_id: string; created_at: string; assets: AssetRow | AssetRow[] | null }>;
   return rows
     .filter((r) => r.assets)
@@ -89,15 +79,6 @@ export async function fetchUserUpvotedAssets(userId: string): Promise<Integratio
       return { ...asset, upvotedAt: r.created_at } as UpvotedAsset;
     })
     .filter((a): a is UpvotedAsset => a !== null);
-=======
-  const rows = (data ?? []) as Array<{ asset_id: string; created_at: string; assets: AssetRow | null }>;
-  return rows
-    .filter((r) => r.assets)
-    .map((r) => {
-      const asset = assetRowToAsset(r.assets!, r.asset_id);
-      return { ...asset, upvotedAt: r.created_at } as UpvotedAsset;
-    });
->>>>>>> faf152f628abaf2f7a11486ccc1a232f0edc572d
 }
 
 export interface UpvoteStatus {

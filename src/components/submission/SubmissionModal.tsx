@@ -136,7 +136,7 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
         <div className="flex items-center justify-between border-b border-obsidian-700/60 px-5 py-4">
           <div>
             <h2 className="font-display text-lg font-semibold text-obsidian-100">
-              Publish an asset
+              Share a Prompt, Rule, or Config
             </h2>
             <p className="mt-0.5 text-xs text-obsidian-300">
               Share your AI rule, MCP server, or prompt with the community.
@@ -171,6 +171,41 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
                 placeholder="The fastest way to ship prompts"
               />
               {errors.tagline && <span className="text-[11px] text-rose-400">{errors.tagline}</span>}
+            </Field>
+          </div>
+
+          <div className="mt-5 space-y-4 border-t border-obsidian-700/60 pt-5">
+            <Field label="System Prompt" required hint="The tab content shown under System Prompt">
+              <textarea
+                className={`${inputCls} min-h-[110px] resize-y font-mono text-xs`}
+                value={form.system_prompt}
+                onChange={(e) => set('system_prompt', e.target.value)}
+                placeholder="You are a senior assistant…"
+              />
+              {errors.system_prompt && (
+                <span className="text-[11px] text-rose-400">{errors.system_prompt}</span>
+              )}
+            </Field>
+
+            <Field label="Framework Rules" hint="One rule per line (optional)">
+              <textarea
+                className={`${inputCls} min-h-[80px] resize-y font-mono text-xs`}
+                value={form.framework_rules}
+                onChange={(e) => set('framework_rules', e.target.value)}
+                placeholder={'Always run the type-checker.\nNever drop columns.'}
+              />
+            </Field>
+
+            <Field label="MCP Connection String" required>
+              <input
+                className={`${inputCls} font-mono text-xs`}
+                value={form.mcp_connection_string}
+                onChange={(e) => set('mcp_connection_string', e.target.value)}
+                placeholder="mytool://mcp?transport=stdio&command=mytool-mcp"
+              />
+              {errors.mcp_connection_string && (
+                <span className="text-[11px] text-rose-400">{errors.mcp_connection_string}</span>
+              )}
             </Field>
           </div>
 
@@ -288,41 +323,6 @@ export function SubmissionModal({ onSubmitted }: { onSubmitted: () => void }) {
                   );
                 })}
               </div>
-            </Field>
-          </div>
-
-          <div className="mt-5 space-y-4 border-t border-obsidian-700/60 pt-5">
-            <Field label="System Prompt" required hint="The tab content shown under System Prompt">
-              <textarea
-                className={`${inputCls} min-h-[110px] resize-y font-mono text-xs`}
-                value={form.system_prompt}
-                onChange={(e) => set('system_prompt', e.target.value)}
-                placeholder="You are a senior assistant…"
-              />
-              {errors.system_prompt && (
-                <span className="text-[11px] text-rose-400">{errors.system_prompt}</span>
-              )}
-            </Field>
-
-            <Field label="Framework Rules" hint="One rule per line (optional)">
-              <textarea
-                className={`${inputCls} min-h-[80px] resize-y font-mono text-xs`}
-                value={form.framework_rules}
-                onChange={(e) => set('framework_rules', e.target.value)}
-                placeholder={'Always run the type-checker.\nNever drop columns.'}
-              />
-            </Field>
-
-            <Field label="MCP Connection String" required>
-              <input
-                className={`${inputCls} font-mono text-xs`}
-                value={form.mcp_connection_string}
-                onChange={(e) => set('mcp_connection_string', e.target.value)}
-                placeholder="mytool://mcp?transport=stdio&command=mytool-mcp"
-              />
-              {errors.mcp_connection_string && (
-                <span className="text-[11px] text-rose-400">{errors.mcp_connection_string}</span>
-              )}
             </Field>
           </div>
 
